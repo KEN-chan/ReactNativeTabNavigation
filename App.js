@@ -6,12 +6,21 @@
 
 import React from 'react';
 import { View, Text, Button } from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator, TabNavigator } from 'react-navigation';
 
 class HomeScreen extends React.Component {
 
-  static navigationOptions = {
-    title: 'Home',
+  static navigationOptions = ({ navigation }) => {
+
+    return {
+      title: "home",
+      headerLeft: (
+        <Button
+          onPress = { () => navigation.navigate('MyModal') }
+          title = 'info'
+        />
+      ),
+    }
   };
 
   render() {
@@ -32,8 +41,12 @@ class HomeScreen extends React.Component {
 
 class DetailsScreen extends React.Component {
 
-  static navigationOptions = {
-    title: 'Details',
+  static navigationOptions = ({ navigation }) => {
+    const { params } = navigation.state;
+
+    return {
+      title: params ? params.otherParam : 'A Nested Details'
+    }
   };
 
   render() {
@@ -56,6 +69,34 @@ class DetailsScreen extends React.Component {
   }
 }
 
+class ModalScreen extends React.Component {
+
+  render() {
+
+    return (
+      <View>
+        <Text>This is modal</Text>
+        <Button
+          onPress = { () => this.props.navigation.goBack() }
+          title = "dismiss"
+        />
+      </View>
+    );
+  }
+}
+
+class SettingsScreen extends React.Component {
+
+  render() {
+
+    return (
+      <View style = {{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f59054' }}>
+        <Text>Settings</Text>
+      </View>
+    );
+  }
+}
+
 const RootStack = StackNavigator(
   {
     Home: {
@@ -67,12 +108,41 @@ const RootStack = StackNavigator(
   },
   {
     initialRouteName: 'Home',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f50948',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
   }
 );
+
+const ModalStack = StackNavigator(
+  {
+    Root: {
+      screen: RootStack,
+    },
+    MyModal: {
+      screen: ModalScreen,
+    },
+  },
+  {
+    mode: 'modal',
+    headerMode: 'none',
+  }
+);
+
+const TabNavigation = TabNavigator({
+  Home: { screen: ModalStack },
+  Settings: { screen: SettingsScreen },
+});
 
 export default class App extends React.Component {
 
   render() {
-    return <RootStack />;
+    return <TabNavigation />;
   }
 }
