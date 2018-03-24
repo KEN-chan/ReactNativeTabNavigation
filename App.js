@@ -6,7 +6,8 @@
 
 import React from 'react';
 import { View, Text, Button } from 'react-native';
-import { StackNavigator, TabNavigator } from 'react-navigation';
+import { StackNavigator, TabNavigator, TabBarBottom } from 'react-navigation';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 class HomeScreen extends React.Component {
 
@@ -135,10 +136,37 @@ const ModalStack = StackNavigator(
   }
 );
 
-const TabNavigation = TabNavigator({
-  Home: { screen: ModalStack },
-  Settings: { screen: SettingsScreen },
-});
+const TabNavigation = TabNavigator(
+  {
+    Home: { screen: ModalStack },
+    Settings: { screen: SettingsScreen },
+  },
+  {
+    navigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, tintColor }) => {
+        const { routeName } = navigation.state;
+        let iconName;
+        if (routeName === 'Home') {
+          iconName = `md-information-circle`;
+        } else if (routeName === 'Settings') {
+          iconName = `md-options`;
+        }
+
+        // You can return any component that you like here! We usually use an
+        // icon component from react-native-vector-icons
+        return <Ionicons name={iconName} size={25} color={tintColor} />;
+      },
+    }),
+    tabBarOptions: {
+      activeTintColor: 'tomato',
+      inactiveTintColor: 'gray',
+    },
+    tabBarComponent: TabBarBottom,
+    tabBarPosition: 'bottom',
+    animationEnabled: false,
+    swipeEnabled: false,
+  }
+);
 
 export default class App extends React.Component {
 
